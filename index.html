@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fireworks Animation</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="fireworksCanvas"></canvas>
+
+    <script>
+        // Canvas 설정
+        const canvas = document.getElementById('fireworksCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // 폭죽 효과 클래스
+        class Firework {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height;
+                this.radius = 2;
+                this.color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                this.velocity = {
+                    x: Math.random() * 4 - 2,
+                    y: Math.random() * -8 - 5
+                };
+                this.gravity = 0.2;
+                this.life = true;
+            }
+
+            update() {
+                this.x += this.velocity.x;
+                this.y += this.velocity.y;
+                this.velocity.y += this.gravity;
+
+                if (this.radius > 0.2) {
+                    this.radius -= 0.1;
+                } else {
+                    this.life = false;
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+        }
+
+        // 폭죽 효과 배열
+        const fireworks = [];
+
+        // 애니메이션 프레임
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 폭죽 효과 업데이트 및 그리기
+            for (let i = fireworks.length - 1; i >= 0; i--) {
+                fireworks[i].update();
+                fireworks[i].draw();
+
+                if (!fireworks[i].life) {
+                    fireworks.splice(i, 1);
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        // 클릭 이벤트에 따라 폭죽 효과 생성
+        window.addEventListener('click', (e) => {
+            const firework = new Firework();
+            fireworks.push(firework);
+        });
+
+        // 애니메이션 시작
+        animate();
+    </script>
+</body>
+</html>
